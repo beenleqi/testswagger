@@ -1,0 +1,118 @@
+---
+swagger: "2.0"
+info:
+    description: From the todo list tutorial on goswagger.io
+    title: A test swagger application
+    version: 1.0.0
+consumes:
+    - application/io.goswagger.examples.todo-list.v1+json
+produces:
+    - application/io.goswagger.examples.todo-list.v1+json
+schemes: #支持的协议，如果有-https的话，记得配置tls，否则当你启动swagger服务想要页面访问时，控制台会报错： the required flags `--tls-certificate` and `--tls-key` were not specified\
+    - http
+paths:
+    /:
+        get:
+            tags:
+                - todos
+            operationId: findTodos
+            parameters:
+                - name: since
+                  in: query
+                  type: integer
+                  format: int64
+                - name: limit
+                  in: query
+                  type: integer
+                  format: int32
+                  default: 20
+            responses:
+                200:
+                    description: list the todo operations
+                    schema:
+                        type: array
+                        items:
+                            $ref: "#/definitions/item"
+                default:
+                    description: generic error response
+                    schema:
+                        $ref: "#/definitions/error"
+        post:
+            tags:
+                - todos
+            operationId: addOne
+            parameters:
+                - name: body
+                  in: body
+                  schema:
+                      $ref: "#/definitions/item"
+            responses:
+                201:
+                    description: Created
+                    schema:
+                        $ref: "#/definitions/item"
+                default:
+                    description: error
+                    schema:
+                        $ref: "#/definitions/error"
+    /{id}:
+        parameters:
+            - type: integer
+              format: int64
+              name: id
+              in: path
+              required: true
+        put:
+            tags:
+                - todos
+            operationId: updateOne
+            parameters:
+                - name: body
+                  in: body
+                  schema:
+                      $ref: "#/definitions/item"
+            responses:
+                200:
+                    description: OK
+                    schema:
+                        $ref: "#/definitions/item"
+                default:
+                    description: error
+                    schema:
+                        $ref: "#/definitions/error"
+        delete:
+            tags:
+                - todos
+            operationId: destroyOne
+            responses:
+                204:
+                    description: Deleted
+                default:
+                    description: error
+                    schema:
+                        $ref: "#/definitions/error"
+definitions: #变量定义
+    item: #名称
+        type: object #object表示是个结构体
+        required: #必有的属性
+            - description
+        properties: #结构体的属性定义
+            id:     #结构体的id字段
+                type: integer #id字段的类型
+                format: int64 #id字段的格式
+                readOnly: true #id字段是否只读
+            description:  #结构体的description字段
+                type: string #description字段的类型
+                minLength: 1 #description字段的最小长度
+            completed:    #结构体的completed字段
+                type: boolean #completed字段的类型
+    error:
+        type: object #表明error是个结构体
+        required:
+            - message #必需字段为message
+        properties:
+            code:
+                type: integer
+                format: int64
+            message:
+                type: string
