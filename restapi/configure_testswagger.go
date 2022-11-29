@@ -51,8 +51,12 @@ func addItem(item *models.Item) error  {
 	defer itemsLock.Unlock()
 
 	newID := newItemID()
-	item.ID =
+	item.ID = newID
+	items[newID] = item
+	return nil
 }
+
+//下面都是生成的
 
 func configureAPI(api *operations.TestswaggerAPI) http.Handler {
 	// configure the api here
